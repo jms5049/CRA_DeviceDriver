@@ -34,3 +34,19 @@ TEST_F(FlashFixture, TestName2) {
 
 	EXPECT_THROW(dd.read(0x0A), std::exception);
 }
+
+TEST_F(FlashFixture, TestName3) {
+	EXPECT_CALL(fMock, read)
+		.Times(1)
+		.WillOnce(Return((unsigned char)0xFF));
+
+	EXPECT_CALL(fMock, write);
+	dd.write(0x0A, 0xAB);
+}
+
+TEST_F(FlashFixture, TestName4) {
+	EXPECT_CALL(fMock, read)
+		.WillOnce(Return((unsigned char)0xA));
+
+	EXPECT_THROW(dd.write(0x0A, 0xAB), std::exception);
+}
