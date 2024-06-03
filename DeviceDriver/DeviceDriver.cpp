@@ -3,14 +3,32 @@
 DeviceDriver::DeviceDriver(FlashMemoryDevice* hardware) : m_hardware(hardware)
 {}
 
+void DeviceDriver::checkRealValue(int result, long address) {
+    for (int i = 0; i < 4; i++) {
+        int testValue = (int)(m_hardware->read(address));
+        if (result != testValue) {
+            throw ReadFailException();
+        }
+    }
+}
+
 int DeviceDriver::read(long address)
 {
-    // TODO: implement this method properly
-    return (int)(m_hardware->read(address));
+    int result = (int)(m_hardware->read(address));
+
+    checkRealValue(result, address);
+    return result;
 }
 
 void DeviceDriver::write(long address, int data)
 {
-    // TODO: implement this method
+    checkBlankPage(address);
     m_hardware->write(address, (unsigned char)data);
+}
+
+void DeviceDriver::checkBlankPage(long address) {
+    int result = (int)(m_hardware->read(address));
+    if (result != 0xFF) {
+        throw std::exception("NO");
+    }
 }
