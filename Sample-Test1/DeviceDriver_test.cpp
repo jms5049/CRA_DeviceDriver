@@ -16,6 +16,11 @@ public:
 	DeviceDriver dd{ &fMock };
 };
 
+class AppFixture : public testing::Test {
+public:
+};
+
+
 TEST_F(FlashFixture, TestName) {
 	EXPECT_CALL(fMock, read)
 		.Times(5);
@@ -49,4 +54,38 @@ TEST_F(FlashFixture, TestName4) {
 		.WillOnce(Return((unsigned char)0xA));
 
 	EXPECT_THROW(dd.write(0x0A, 0xAB), std::exception);
+}
+
+TEST_F(AppFixture, App1) {
+
+	FlashMock fMock;
+	DeviceDriver dd{ &fMock };
+	Application app{ &dd };
+
+	//5개 address 읽고,
+	//한 address read 5번씩
+	//총 25회 read
+	EXPECT_CALL(fMock, read)
+		.Times(25);
+
+	app.readAndPrint(0x00, 0x04);
+}
+
+TEST_F(AppFixture, App2) {
+
+	FlashMock fMock;
+	DeviceDriver dd{ &fMock };
+	Application app{ &dd };
+
+	//5개 address 읽고,
+	//한 address read 5번씩
+	//총 25회 read
+	EXPECT_CALL(fMock, read)
+		.Times(5)
+		.WillRepeatedly(Return(0xFF));
+
+	EXPECT_CALL(fMock, write(_, 0xFA)).
+		Times(5);
+
+	app.writeAll(0xFA);
 }

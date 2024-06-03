@@ -32,3 +32,24 @@ void DeviceDriver::checkBlankPage(long address) {
         throw std::exception("NO");
     }
 }
+
+class Application {
+public:
+    Application(DeviceDriver* dd) : dd{ dd } {
+    }
+
+    void readAndPrint(long startAddr, long endAddr) {
+        for (long addr = startAddr; addr <= endAddr; addr++) {
+            dd->read(addr);
+        }
+    }
+
+    void writeAll(unsigned char value) {
+        for (int addr = 0x00; addr <= 0x04; addr++) {
+            dd->write(addr, value);
+        }
+    }
+
+private:
+    DeviceDriver* dd;
+};
